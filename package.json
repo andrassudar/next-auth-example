@@ -1,23 +1,35 @@
 {
-    "name": "next-auth-example",
-    "version": "3.1.0",
-    "description": "An example project for NextAuth.js",
-    "repository": "https://github.com/nextauthjs/next-auth-example.git",
-    "homepage": "http://next-auth-example.now.sh",
-    "main": "",
-    "scripts": {
-        "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
-        "build": "next build",
-        "start": "next start"
-    },
-    "author": "Iain Collins <me@iaincollins.com>",
-    "license": "ISC",
-    "dependencies": {
-        "cross-env": "^7.0.2",
-        "next": "^9.5.0",
-        "next-auth": "^3.1.0",
-        "react": "^16.13.1",
-        "react-dom": "^16.13.1",
-        "sqlite3": "^4.2.0"
-    }
+  "name": "next-auth-example",
+  "version": "3.1.0",
+  "description": "An example project for NextAuth.js",
+  "repository": "https://github.com/nextauthjs/next-auth-example.git",
+  "homepage": "http://next-auth-example.now.sh",
+  "main": "",
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS='--inspect' next dev -p 8080",
+    "build": "next build",
+    "start": "next start -p 8080",
+    "storybook": "start-storybook -p 6006 --no-dll",
+    "build-storybook": "build-storybook --no-dll"
+  },
+  "author": "Iain Collins <me@iaincollins.com>",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cross-env": "^7.0.2",
+    "mssql": "^6.2.3",
+    "next": "^9.5.0",
+    "next-auth": "^3.1.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@storybook/addon-actions": "^6.0.28",
+    "@storybook/addon-essentials": "^6.0.28",
+    "@storybook/addon-links": "^6.0.28",
+    "@storybook/react": "^6.0.28",
+    "babel-loader": "^8.1.0",
+    "react-is": "^17.0.1"
+  }
 }

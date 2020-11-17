@@ -1,6 +1,10 @@
 import NextAuth from 'next-auth'
 import Providers from 'next-auth/providers'
 
+import bcrypt from 'bcryptjs'
+
+import rwsql from '../../../utils/rwsql.js'
+
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 const options = {
@@ -17,20 +21,22 @@ const options = {
                 password: { label: 'Pass', type: 'password' },
             },
             authorize: async (credentials) => {
-                const getUser = (credentials) => {
-                    // You need to provide your own logic here that takes the credentials
-                    // submitted and returns either a object representing a user or value
-                    // that is false/null if the credentials are invalid.
-                    return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-                    //return null
+                const getUser = async (userid) => {
+                    const user = await rwsql.getSQLDataFromTE('teszt_user', { userid: userid })
+                    return user
                 }
-                const user = getUser(credentials)
-                if (user) {
-                    // Any user object returned here will be saved in the JSON Web Token
-                    return Promise.resolve(user)
-                } else {
-                    return Promise.resolve(null)
-                }
+
+                const userData = await getUser(credentials.username)
+                if (!userData.success) return Promise.reject(new Error('nem sikerült a hívás')) // nem sikerült a hívás valamiért
+                if (!userData.data) return Promise.reject(new Error('nincs ilyen felhasználó')) // nincs ilyen user
+
+                const user = userData.data[0]
+                const isMatch = await bcrypt.compare(credentials.password, user.password)
+
+                if (!isMatch) return Promise.reject(new Error('hibás jelszó')) // nem jó a beírt password  Promise.resolve(null)
+
+                // Any user object returned here will be saved in the JSON Web Token
+                return Promise.resolve({ id: user.userid, name: user.username, email: user.userid })
             },
         }),
     ],
@@ -55,6 +61,7 @@ const options = {
 
         // Seconds - How long until an idle session expires and is no longer valid.
         // maxAge: 30 * 24 * 60 * 60, // 30 days
+        maxAge: 60,
 
         // Seconds - Throttle how frequently to write to database to extend a session.
         // Use it to limit write operations. Set to 0 to always update the database.
@@ -81,7 +88,7 @@ const options = {
     // pages is not specified for that route.
     // https://next-auth.js.org/configuration/pages
     pages: {
-        // signIn: '/api/auth/signin',  // Displays signin buttons
+        signIn: '/auth/login', // Displays signin buttons
         // signOut: '/api/auth/signout', // Displays form with sign out button
         // error: '/api/auth/error', // Error code passed in query string as ?error=
         // verifyRequest: '/api/auth/verify-request', // Used for check email page
